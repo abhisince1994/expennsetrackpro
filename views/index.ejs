@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Expense Tracker</h1>
+        
+        <!-- Expense Form -->
+         <form action="/add" method="POST" class="mb-4">
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" name="name" class="form-control" placeholder="Expense Name" required>
+                </div>
+                <div class="col">
+                    <input type="number" name="amount" class="form-control" placeholder="Amount" step="0.01" required>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </div>
+            </div>
+         </form>
+         
+         <!-- Expense List -->
+          <div id="expense-list">
+            <% expenses.forEach((expense, index) => { %>
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title"><%=expense.name %></h5>
+                        <p class="card-text">₹<%=expense.amount.toFixed(2) %></p>
+                        <form action="/edit/<%= expense.id %>" method="POST" class="d-inline">
+                            <input type="number" name="amount" value="<%=expense.amount.toFixed(2) %>" step="0.01" required>
+                            <button type="submit" class="btn btn-info mr-2">Edit</button>
+                        </form>
+                        <form action="/delete/<%= expense.id %>" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            <% }) %>
+          </div>
+    </div>
+</body>
+</html>
