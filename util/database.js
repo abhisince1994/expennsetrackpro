@@ -5,6 +5,4 @@ const sequelize = new Sequelize('expense_tracker', 'root', '123456789', {
     dialect: 'mysql'
 });
 
-module.exports = {
-    sequelize
-};
+module.exports = sequelize;

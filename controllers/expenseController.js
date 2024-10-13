@@ -20,7 +20,9 @@ exports.addExpense = (req, res, next) => {
     const { name, amount } = req.body;
     
     // Validate amount
-    if (validator.isValidAmount(amount)) {
+    if (!name || !validator.isValidAmount(amount)) {
+        return res.status(400).send('invalid name or amount.');
+    }
         Expense.create({ name: name, amount: parseFloat(amount) })
             .then(() => {
                 res.redirect('/');
@@ -29,9 +31,6 @@ exports.addExpense = (req, res, next) => {
                 logger.log(`Error adding expense: ${error.message}`);
                 res.status(500).send('Server Error');
             });
-    } else {
-        res.status(400).send('Invalid amount.');
-    }
 };
 
 // Edit an existing expense
@@ -39,26 +38,24 @@ exports.editExpense = (req, res, next) => {
     const { index } = req.params;
     const newAmount = parseFloat(req.body.amount);
     
-    if (validator.isValidAmount(newAmount)) {
-        Expense.findByPk(index)
-            .then(expense => {
-                if (expense) {
-                    expense.amount = newAmount;
-                    return expense.save();
-                } else {
-                    res.status(404).send('Expense not found.');
-                }
-            })
-            .then(() => {
-                res.redirect('/');
-            })
-            .catch(error => {
-                logger.log(`Error editing expense: ${error.message}`);
-                res.status(500).send('Server Error');
-            });
-    } else {
-        res.status(400).send('Invalid amount.');
+    if (!validator.isValidAmount(newAmount)) {
+        return res.status(400).send('invalid amount.');
     }
+    Expense.findByPk(index)
+    .then(expense => {
+        if (!expense) {
+            return res.status(404).send('Expense not found.');
+        }
+        expense.amount = newAmount;
+        return expense.save();
+    })
+    .then(() => {
+        res.redirect('/');
+    })
+    .catch(error => {
+        logger.log(`Error editing expense: ${error.message}`);
+        res.status(500).send('Server Error');
+    });
 };
 
 // Delete an expense
@@ -67,11 +64,10 @@ exports.deleteExpense = (req, res, next) => {
 
     Expense.findByPk(index)
         .then(expense => {
-            if (expense) {
-                return expense.destroy();
-            } else {
-                res.status(404).send('Expense not found.');
+            if (!expense) {
+                return res.status(404).send('Expense not found.');
             }
+            return expense.destroy();
         })
         .then(() => {
             res.redirect('/');

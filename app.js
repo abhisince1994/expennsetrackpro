@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const expenseRoutes = require('./routes/expenseRoutes');
 const logger = require('./util/logger');
-const { sequelize } = require('./util/database');
+const  sequelize  = require('./util/database');
 const Expense = require('./models/expense'); 
 
 const app = express();
